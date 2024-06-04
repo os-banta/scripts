@@ -1,0 +1,48 @@
+#Code I wrote for the USCyberGames Beginner CTF Super Duper Quick Maths [MISC] 
+
+from pwn import *
+import re
+import time
+
+def solve_equation(equation):
+    try:
+        solution = eval(equation)
+    except Exception as e:
+        print(f"Error solving equation: {equation}, {e}")
+        solution = None
+    return solution
+
+p = remote('0.cloud.chals.io', 15072)
+
+try:
+    while True:
+        try:
+            time.sleep(0.5)
+            output = p.recv(timeout=2).decode().strip()
+            
+            if "Congratulations" in output or "Well done" in output or not output:
+                print("Challenge completed or no more questions.")
+                break
+
+            match = re.search(r'(\d+\s*[\+\-\*/%]\s*\d+|\d+\s*//\s*\d+)', output)
+            if match:
+                equation = match.group(1).replace(' ', '')
+                solution = solve_equation(equation)
+
+                if solution is not None:
+                    p.sendline(str(solution))
+                else:
+                    print("No valid solution found. Exiting.")
+                    break
+            else:
+                print("No equation found in the output. Exiting.")
+                break
+
+        except EOFError:
+            print("Connection closed by remote host.")
+            break
+
+    p.interactive()
+
+finally:
+    p.close()
