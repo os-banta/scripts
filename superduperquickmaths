@@ -1,4 +1,4 @@
-#Code I wrote for the USCyberGames Beginner CTF Super Duper Quick Maths [MISC] 
+#Code I wrote for the -redacted- CTF Super Duper Quick Maths [MISC] 
 
 from pwn import *
 import re
